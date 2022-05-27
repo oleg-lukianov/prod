@@ -1,17 +1,34 @@
 #!/bin/bash
-version="1.0.1 13.11.2020";
 
-inet=`ifconfig -a | grep -oE "^[a-z0-9_]+" | uniq`;
+version="0.0.1 - 13.11.2020";
+version="0.0.2 - 27.05.2022";
+
+step_inter=1;
+step_ip=0;
 mass=();
+mass_inter=();
+mass_ip=();
 
-for interface in $inet; do
-
-    ip=`ifconfig $interface | grep inet | grep -i mask | sed 's/[a-zA-Z:]//g' | awk '{print $1}' | grep -v 127.0.0.1`;
-        if [ $ip ]; then
-            mass+=("$interface ($ip)");
-        fi
+IFS=$'\n';
+for x in `ifconfig -a 2>/dev/null`; do
+    interface=`echo "$x" | grep -oE "^[a-z0-9_]+"`;
+    ip_addrr=`echo "$x" | grep inet | awk '{print $2}'`;
+    mass_inter[$step_inter]=$interface;
+    mass_ip[$step_ip]="$ip_addrr";
+    let "step_inter+=1"
+    let "step_ip+=1"
+#    echo "$interface ($ip_addrr)";
 done;
+unset IFS
 
+for y in $(seq 0 $step_inter); do
+    if [[ "${mass_ip[$y]}" != "127.0.0.1" ]]; then
+        if [[ ${mass_ip[$y]} =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+#         echo "${mass_inter[$y]} ${mass_ip[$y]}"
+	    mass+=("${mass_inter[$y]} (${mass_ip[$y]})");
+	    fi;
+    fi;
+done;
 
 
 CPUcount=`grep -c processor /proc/cpuinfo`;
