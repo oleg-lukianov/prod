@@ -2,6 +2,7 @@
 version="1.0.1";
 version="1.0.2 23.01.2020";
 version="1.0.3 22.09.2020";
+version="1.0.4 24.12.2023";
 
 inet=`/usr/sbin/ifconfig -a | grep -oE "^[a-z0-9]+" | uniq`;
 mass=();
@@ -28,4 +29,5 @@ echo -e "\e[0;91m
      \e[0;94m Uptime\e[0m =\e[0;93m`uptime`\e[0m
         \e[0;94m CPU\e[0m = \e[0;93m$CPUcount x $CPUmodel\e[0m
      \e[0;94m Memory\e[0m = \e[0;93m`cat /proc/meminfo | grep MemTotal | awk '{printf"%d", $2/1024}'` Mb\e[0m
+       \e[0;94m Swap\e[0m = \e[0;93m`cat /proc/meminfo | grep SwapTotal | awk '{printf"%d", $2/1024}'` Mb\e[0m
 \e[0;91m++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\e[0m"

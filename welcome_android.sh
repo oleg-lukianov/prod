@@ -2,6 +2,7 @@
 
 version="0.0.1 - 13.11.2020";
 version="0.0.2 - 27.05.2022";
+version="1.0.3 - 24.12.2023";
 
 step_inter=1;
 step_ip=0;
@@ -43,4 +44,5 @@ echo -e "\e[0;91m
      \e[0;94m Uptime\e[0m =\e[0;93m`uptime`\e[0m
         \e[0;94m CPU\e[0m = \e[0;93m$CPUcount x $CPUmodel\e[0m
      \e[0;94m Memory\e[0m = \e[0;93m`cat /proc/meminfo | grep MemTotal | awk '{printf"%d", $2/1024}'` Mb\e[0m
+       \e[0;94m Swap\e[0m = \e[0;93m`cat /proc/meminfo | grep SwapTotal | awk '{printf"%d", $2/1024}'` Mb\e[0m
 \e[0;91m++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\e[0m"
