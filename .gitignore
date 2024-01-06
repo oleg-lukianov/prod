@@ -279,3 +279,4 @@ cython_debug/
 .DS_Store
 .vault_pass
 backup_android_lftp_rsync.conf
+backup_android_lftp_rsync.log
