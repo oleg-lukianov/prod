@@ -1,0 +1,18 @@
+##  SFTP server  ##
+server=sftp.server.com
+port=22
+login=sftp
+# Create encrypt password 'echo 123 | base64'
+pass=MTIzCg==
+# dir_dest - root folder on the remote server
+dir_dest=/tmp/mnt/sftp/Backup-Hostname
+
+# dir_backup - list of backup directory
+# format is <catalog inside uuid directory>:<full path backup catalog>
+dir_backup=internal:/storage/emulated/0/
+dir_backup=internal:/storage/emulated/0/Tasker
+#dir_backup=internal:/storage/emulated/0/Pictures
+#dir_backup=internal:/storage/emulated/0/Documents
+#dir_backup=internal:/storage/emulated/0/DCIM
+#dir_backup=internal:/storage/emulated/0/Musik
+dir_backup=internal:/storage/emulated/0/scripts
