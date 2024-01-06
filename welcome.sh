@@ -4,7 +4,7 @@ version="1.0.1 20.01.2018";
 version="1.0.2 23.01.2020";
 version="1.0.3 22.09.2020";
 # Changelog:
-# - getInterface modifyed
+# - getInterface modified
 version="1.0.4 26.12.2023";
 # Changelog:
 # - SWAP added
@@ -111,5 +111,3 @@ echo -e "\e[0;91m
 \e[0;94m      Memory\e[0m = \e[0;93m$(getMemory) \e[0m
 \e[0;94m        Swap\e[0m = \e[0;93m$(getSwap) \e[0m
 \e[0;91m++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\e[0m"
-
-exit 0;
