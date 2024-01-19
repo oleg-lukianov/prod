@@ -167,6 +167,14 @@ if [[ $home_ip == 1 ]]; then
         done;
     else
         echo "Not connected";
+        
+        if [[ "$mode" =~ "-lftp" ]]; then
+            curl -vI sftp://"$login":"$pass"@"$server":"$port";
+        elif [[ "$mode" =~ "-rsync" ]]; then
+            echo "quit" | telnet "$server" "$port";
+        else
+            echo "Not parameters (-lftp, -rsync)";
+        fi
     fi
 else
     echo "Device not at home";
