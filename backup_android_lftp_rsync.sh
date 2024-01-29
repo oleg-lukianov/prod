@@ -153,10 +153,10 @@ if [[ $home_ip == 1 ]]; then
                 echo "Enable mode: $mode";
                 
                 if [[ "$mode" =~ "-lftp" ]]; then
-                    lftp -e "mirror --continue --delete -R -x 'thumb' -x '.tmfs' -x '.gs' -x 'Android' -x '.estrongs' $src_final $dest_final/; exit;" -p "$port" -u "$login","$pass" sftp://"$server";
+                    lftp -e "set ftp:ssl-allow no; mirror --continue --delete -R -x 'thumb' -x '.tmfs' -x '.gs' -x 'Android' -x '.estrongs' $src_final $dest_final/; exit;" -p "$port" -u "$login","$pass" sftp://"$server";
 
                 elif [[ "$mode" =~ "-rsync" ]]; then
-                    rsync --progress --exclude '*thumb*' --exclude '.tmfs*' --exclude 'Radio' --delete-excluded --delete -av -e "ssh -p $port" "$src_final" "$server:$dest_final";
+                    rsync --progress --exclude '*thumb*' --exclude '.tmfs*' --exclude 'Radio' --delete-excluded --delete -av -e "ssh -o StrictHostKeyChecking=no -p $port -l $login" "$src_final" "$server:$dest_final";
 
                 else
                     echo "Not parameters (-lftp, -rsync)";

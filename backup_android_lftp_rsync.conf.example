@@ -16,3 +16,16 @@ dir_backup=internal:/storage/emulated/0/Tasker
 #dir_backup=internal:/storage/emulated/0/DCIM
 #dir_backup=internal:/storage/emulated/0/Musik
 dir_backup=internal:/storage/emulated/0/scripts
+
+
+
+##  RSYNC config  ##
+#server=192.168.2.197
+#port=22
+#login=rsync
+# Create encrypt password 'echo 123 | base64'
+#pass=MTIzCg==
+#dir_dest=/var/ftp/pub/HDD_2TB/TEMP/M52
+#dir_backup=internal:/storage/emulated/0/scripts/backup
+
+
