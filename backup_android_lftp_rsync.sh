@@ -22,6 +22,7 @@ echo "-----  Start $(date '+%F %T') (version $version)  -----";
 echo "";
 
 mode=$1;
+test_mode=$2;
 
 function selftest() {
     echo "Selftest.....";
@@ -141,6 +142,23 @@ home_ip=$(ifconfig -a 2>/dev/null | grep -c '192.168.');
 
 if [[ $home_ip == 1 ]]; then
     if [[ $conn == 1 ]]; then
+
+	if [[ "$test_mode" =~ "-test" ]]; then
+	    echo "Send '$0' to '$dir_dest'"
+	    if [[ "$mode" =~ "-lftp" ]]; then
+	        echo "Test connection from LFTP method"
+                lftp -e "set ftp:ssl-allow no; put -O $dir_dest/ '$0'; exit;" -p "$port" -u "$login","$pass" sftp://"$server";
+                exit 0;
+            elif [[ "$mode" =~ "-rsync" ]]; then
+	        echo "Test connection from RSYNC method"
+                sshpass -p "$pass" rsync --progress -av -e "ssh -o StrictHostKeyChecking=no -p $port -l $login" "$0" "$server:$dir_dest";
+                exit 0;
+	    else
+	        echo "Not parameters (-lftp, -rsync)";
+            fi;
+	fi;
+
+
         for x in $dir_backup; do
             if [[ ! $x =~ [#] ]]; then
                 path_parse=(${x//:/ })
@@ -161,7 +179,7 @@ if [[ $home_ip == 1 ]]; then
 
                 else
                     echo "Not parameters (-lftp, -rsync)";
-                fi
+                fi;
 
                 echo "";
             fi;
@@ -175,11 +193,11 @@ if [[ $home_ip == 1 ]]; then
             echo "quit" | telnet "$server" "$port";
         else
             echo "Not parameters (-lftp, -rsync)";
-        fi
-    fi
+        fi;
+    fi;
 else
     echo "Device not at home";
-fi
+fi;
 echo "";
 echo "-----  End $(date '+%F %T') (version $version)  -----";
 
