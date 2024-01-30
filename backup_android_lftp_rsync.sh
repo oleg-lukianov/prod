@@ -30,7 +30,8 @@ function selftest() {
 lftp --version
 rsync --version
 curl --version
-cksum --version
+base64 --version
+sshpass -V
 ";
 
     IFS=$'\n';
