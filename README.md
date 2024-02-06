@@ -32,7 +32,5 @@ Before first run script propose run in test mode
 In this mode doesn't delete files on the destination host  
 Only wil create file with script name  
 ```bash ./backup_android_lftp_rsync.sh -rsync -test```  
-or
+or  
 ```bash ./backup_android_lftp_rsync.sh -rsync -test```  
-
-

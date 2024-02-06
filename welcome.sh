@@ -9,6 +9,9 @@ version="1.0.4 26.12.2023";
 # Changelog:
 # - SWAP added
 # - Android and linux versions merged
+version="1.0.5 06.02.2024";
+# Changelog:
+# - Fix errors on Ubuntu distr
 
 # DEBUG_MODE: 0-disable, 1-enable
 DEBUG_MODE=0
@@ -65,10 +68,12 @@ function getKernel() {
 function getOS() {
     if [[ -f "/etc/system-release" ]]; then
         os=$(cat /etc/system-release)
+    elif [[ -f "/etc/lsb-release" ]]; then
+        os=$(grep DISTRIB_DESCRIPTION /etc/lsb-release | sed 's/DISTRIB_DESCRIPTION=//g' | sed 's/"//g')
     else
-        os_devicename=$(getprop ro.config.devicename | getprop ro.product.model)
-        os_name=$(getprop net.bt.name)
-        os_release=$(getprop ro.build.version.release)
+        os_devicename=$(getprop ro.config.devicename 2>/dev/null | getprop ro.product.model 2>/dev/null)
+        os_name=$(getprop net.bt.name 2>/dev/null)
+        os_release=$(getprop ro.build.version.release 2>/dev/null)
         os="$os_devicename - $os_name $os_release"
     fi;
 
