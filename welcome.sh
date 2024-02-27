@@ -12,7 +12,12 @@ version="1.0.4 26.12.2023";
 version="1.0.5 06.02.2024";
 # Changelog:
 # - Fix errors on Ubuntu distr
+version="1.0.6 27.02.2024";
+# Changelog:
+# - Free Memory and SWAP added
 
+
+#################################
 # DEBUG_MODE: 0-disable, 1-enable
 DEBUG_MODE=0
 
@@ -100,9 +105,19 @@ function getMemory() {
     echo "$memory Mb"
 }
 
+function getMemoryAvailable() {
+    memory_available=$(grep MemAvailable /proc/meminfo | awk '{printf"%d", $2/1024}')
+    echo "$memory_available Mb"
+}
+
 function getSwap() {
     swap=$(grep SwapTotal /proc/meminfo | awk '{printf"%d", $2/1024}')
     echo "$swap Mb"
+}
+
+function getSwapFree() {
+    swap_free=$(grep SwapFree /proc/meminfo | awk '{printf"%d", $2/1024}')
+    echo "$swap_free Mb"
 }
 
 echo -e "\e[0;91m
@@ -113,6 +128,6 @@ echo -e "\e[0;91m
 \e[0;94m          OS\e[0m = \e[0;93m$(getOS) \e[0m
 \e[0;94m      Uptime\e[0m = \e[0;93m$(getUptime) \e[0m
 \e[0;94m         CPU\e[0m = \e[0;93m$(getCPUcount) x $(getCPUmodel) \e[0m
-\e[0;94m      Memory\e[0m = \e[0;93m$(getMemory) \e[0m
-\e[0;94m        Swap\e[0m = \e[0;93m$(getSwap) \e[0m
+\e[0;94m      Memory\e[0m = \e[0;93m$(getMemory) (MemAvailable = $(getMemoryAvailable)) \e[0m
+\e[0;94m        Swap\e[0m = \e[0;93m$(getSwap) (SwapFree = $(getSwapFree)) \e[0m
 \e[0;91m++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\e[0m"
