@@ -15,18 +15,37 @@ version="1.0.5 06.02.2024";
 version="1.0.6 27.02.2024";
 # Changelog:
 # - Free Memory and SWAP added
+version="1.0.7 18.03.2024";
+# Changelog:
+# - Fix errors on RHEL6 with netstat and memory
+# - Feature: timing added in debug mode
 
 
 #################################
 # DEBUG_MODE: 0-disable, 1-enable
 DEBUG_MODE=0
+ARGUMENT=$1
+
+function getTime() {
+    if [[ $DEBUG_MODE == 1 ]]; then
+        calcSec=$(( $(date +%s) - $(date -d "$date_start" +%s) ))
+        echo -e "\e[0;91mExec time = $calcSec second(s) \e[0m\n"
+    fi;
+}
+
+function getVersion() {
+    echo "$version"
+}
 
 function getHostname() {
+    date_start=$(date)
     hostname=$(hostname)
     echo "$hostname"
+    getTime;
 }
 
 function getInterface() {
+    date_start=$(date)
     step_inter=1;
     step_ip=0;
     mass=();
@@ -36,7 +55,7 @@ function getInterface() {
     IFS=$'\n';
     for x in $(ifconfig -a 2>/dev/null); do
         interface=$(echo "$x" | grep -oE "^[a-z0-9_]+");
-        ip_addrr=$(echo "$x" | grep inet | awk '{print $2}');
+        ip_addrr=$(echo "$x" | grep inet | sed 's/addr://g' | awk '{print $2}');
         mass_inter[$step_inter]=$interface;
         mass_ip[$step_ip]="$ip_addrr";
         (( step_inter+=1 ))
@@ -59,18 +78,22 @@ function getInterface() {
     done;
 
     echo "${mass[@]}"
+    getTime;
 }
 
 function getKernel() {
+    date_start=$(date)
     kernel_s=$(uname -s)
     kernel_n=$(uname -n)
     kernel_r=$(uname -r)
     kernel_m=$(uname -m)
     kernel_o=$(uname -o)
     echo "$kernel_s $kernel_n $kernel_r $kernel_m $kernel_o"
+    getTime;
 }
 
 function getOS() {
+    date_start=$(date)
     if [[ -f "/etc/system-release" ]]; then
         os=$(cat /etc/system-release)
     elif [[ -f "/etc/lsb-release" ]]; then
@@ -83,44 +106,67 @@ function getOS() {
     fi;
 
     echo "$os"
+    getTime;
 }
 
 function getUptime() {
+    date_start=$(date)
     uptime=$(uptime | sed 's/^\s//g' | sed 's/  / /g')
     echo "$uptime"
+    getTime;
 }
 
 function getCPUcount() {
+    date_start=$(date)
     CPUcount=$(grep -c processor /proc/cpuinfo)
     echo "$CPUcount"
+    getTime;
 }
 
 function getCPUmodel() {
+    date_start=$(date)
     model=$(lscpu | grep 'Model name' | sed 's/Model name:\s//g' | uniq | xargs)
     echo "$model"
+    getTime;
 }
 
 function getMemory() {
+    date_start=$(date)
     memory=$(grep MemTotal /proc/meminfo | awk '{printf"%d", $2/1024}')
     echo "$memory Mb"
+    getTime;
 }
 
 function getMemoryAvailable() {
+    date_start=$(date)
+    memory_parameter="MemAvailable"
     memory_available=$(grep MemAvailable /proc/meminfo | awk '{printf"%d", $2/1024}')
-    echo "$memory_available Mb"
+    if [[ $memory_available == "" ]]; then
+        memory_parameter="MemFree"
+        memory_available=$(grep MemFree /proc/meminfo | awk '{printf"%d", $2/1024}')
+    fi;
+    echo "$memory_parameter = $memory_available Mb"
+    getTime;
 }
 
 function getSwap() {
+    date_start=$(date)
     swap=$(grep SwapTotal /proc/meminfo | awk '{printf"%d", $2/1024}')
     echo "$swap Mb"
+    getTime;
 }
 
 function getSwapFree() {
+    date_start=$(date)
     swap_free=$(grep SwapFree /proc/meminfo | awk '{printf"%d", $2/1024}')
     echo "$swap_free Mb"
+    getTime;
 }
 
-echo -e "\e[0;91m
+if [[ $ARGUMENT == -v || $ARGUMENT == -version || $ARGUMENT == --version ]]; then
+    getVersion;
+else
+    echo -e "\e[0;91m
 ++++++++++++++++++++: System Data (version $version) :++++++++++++++++++++\e[0m
 \e[0;94m    Hostname\e[0m = \e[0;93m$(getHostname) \e[0m
 \e[0;94m     Address\e[0m = \e[0;93m$(getInterface) \e[0m
@@ -128,6 +174,7 @@ echo -e "\e[0;91m
 \e[0;94m          OS\e[0m = \e[0;93m$(getOS) \e[0m
 \e[0;94m      Uptime\e[0m = \e[0;93m$(getUptime) \e[0m
 \e[0;94m         CPU\e[0m = \e[0;93m$(getCPUcount) x $(getCPUmodel) \e[0m
-\e[0;94m      Memory\e[0m = \e[0;93m$(getMemory) (MemAvailable = $(getMemoryAvailable)) \e[0m
+\e[0;94m      Memory\e[0m = \e[0;93m$(getMemory) ($(getMemoryAvailable)) \e[0m
 \e[0;94m        Swap\e[0m = \e[0;93m$(getSwap) (SwapFree = $(getSwapFree)) \e[0m
-\e[0;91m++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\e[0m"
+\e[0;91m++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\e[0m\n"
+fi;
