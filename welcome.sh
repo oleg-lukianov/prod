@@ -125,7 +125,7 @@ function getCPUcount() {
 
 function getCPUmodel() {
     date_start=$(date)
-    model=$(lscpu | grep 'Model name' | sed 's/Model name:\s//g' | uniq | xargs)
+    model=$(lscpu | grep '^Model name' | sed 's/Model name:\s//g' | uniq | xargs)
     echo "$model"
     getTime;
 }
