@@ -19,6 +19,9 @@ version="1.0.7 18.03.2024";
 # Changelog:
 # - Fix errors on RHEL6 with netstat and memory
 # - Feature: timing added in debug mode
+version="1.0.8 13.09.2024";
+# Changelog:
+# - Fix errors on RHEL6 with CPU model and OS
 
 
 #################################
@@ -98,6 +101,8 @@ function getOS() {
         os=$(cat /etc/system-release)
     elif [[ -f "/etc/lsb-release" ]]; then
         os=$(grep DISTRIB_DESCRIPTION /etc/lsb-release | sed 's/DISTRIB_DESCRIPTION=//g' | sed 's/"//g')
+    elif [[ -f "/etc/redhat-release" ]]; then
+        os=$(cat /etc/redhat-release)
     else
         os_devicename=$(getprop ro.config.devicename 2>/dev/null | getprop ro.product.model 2>/dev/null)
         os_name=$(getprop net.bt.name 2>/dev/null)
@@ -125,8 +130,13 @@ function getCPUcount() {
 
 function getCPUmodel() {
     date_start=$(date)
-    model=$(lscpu | grep '^Model name' | sed 's/Model name:\s//g' | uniq | xargs)
-    echo "$model"
+    if [[ $(which lscpu 2>>/dev/null; echo $?) == 0 ]]; then
+        model=$(lscpu | grep '^Model name' | sed 's/Model name:\s//g' | uniq | xargs)
+        echo "$model"
+    else
+        model=$(grep -i "model name" /proc/cpuinfo | head -1 | awk '{print $4" "$5" "$6" "$7" "$8" "$9" "$10}');
+        echo "$model"
+    fi;
     getTime;
 }
 
