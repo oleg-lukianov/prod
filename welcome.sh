@@ -43,6 +43,11 @@ function getVersion() {
 function getHostname() {
     date_start=$(date)
     hostname=$(hostname)
+    if [[ "$hostname" == "localhost" ]]; then
+        if [[ ! "$HOSTNAME" == "" ]]; then
+            hostname="$HOSTNAME";
+        fi;
+    fi;
     echo "$hostname"
     getTime;
 }
@@ -130,7 +135,7 @@ function getCPUcount() {
 
 function getCPUmodel() {
     date_start=$(date)
-    if [[ $(which lscpu 2>>/dev/null; echo $?) == 0 ]]; then
+    if [[ $(which lscpu 1>/dev/null 2>/dev/null; echo $?) == 0 ]]; then
         model=$(lscpu | grep '^Model name' | sed 's/Model name:\s//g' | uniq | xargs)
         echo "$model"
     else
