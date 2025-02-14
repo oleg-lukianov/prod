@@ -136,7 +136,7 @@ function getCPUcount() {
 function getCPUmodel() {
     date_start=$(date)
     if [[ $(which lscpu 1>/dev/null 2>/dev/null; echo $?) == 0 ]]; then
-        model=$(lscpu | grep '^Model name' | sed 's/Model name:\s//g' | uniq | xargs)
+        model=$(lscpu | grep '^Model name' | sed 's/Model name:\s//g' | grep -v ' -' | uniq | xargs)
         echo "$model"
     else
         model=$(grep -i "model name" /proc/cpuinfo | head -1 | awk '{print $4" "$5" "$6" "$7" "$8" "$9" "$10}');
