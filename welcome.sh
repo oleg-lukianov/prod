@@ -22,6 +22,9 @@ version="1.0.7 18.03.2024";
 version="1.0.8 13.09.2024";
 # Changelog:
 # - Fix errors on RHEL6 with CPU model and OS
+version="1.0.9 18.03.2025";
+# Changelog:
+# - added -os features
 
 
 #################################
@@ -31,29 +34,29 @@ ARGUMENT=$1
 
 function getTime() {
     if [[ $DEBUG_MODE == 1 ]]; then
-        calcSec=$(( $(date +%s) - $(date -d "$date_start" +%s) ))
-        echo -e "\e[0;91mExec time = $calcSec second(s) \e[0m\n"
+        calcSec=$(( $(date +%s) - $(date -d "$date_start" +%s) ));
+        echo -e "\e[0;91mExec time = $calcSec second(s) \e[0m\n";
     fi;
 }
 
 function getVersion() {
-    echo "$version"
+    echo "$version";
 }
 
 function getHostname() {
-    date_start=$(date)
-    hostname=$(hostname)
+    date_start=$(date);
+    hostname=$(hostname);
     if [[ "$hostname" == "localhost" ]]; then
         if [[ ! "$HOSTNAME" == "" ]]; then
             hostname="$HOSTNAME";
         fi;
     fi;
-    echo "$hostname"
+    echo "$hostname";
     getTime;
 }
 
 function getInterface() {
-    date_start=$(date)
+    date_start=$(date);
     step_inter=1;
     step_ip=0;
     mass=();
@@ -66,8 +69,8 @@ function getInterface() {
         ip_addrr=$(echo "$x" | grep inet | sed 's/addr://g' | awk '{print $2}');
         mass_inter[$step_inter]=$interface;
         mass_ip[$step_ip]="$ip_addrr";
-        (( step_inter+=1 ))
-        (( step_ip+=1 ))
+        (( step_inter+=1 ));
+        (( step_ip+=1 ));
         if [[ $DEBUG_MODE == 1 ]]; then
             echo "$interface ($ip_addrr)";
         fi;
@@ -77,109 +80,167 @@ function getInterface() {
     for y in $(seq 0 $step_inter); do
         if [[ "${mass_ip[$y]}" != "127.0.0.1" ]]; then
             if [[ ${mass_ip[$y]} =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            if [[ $DEBUG_MODE == 1 ]]; then
-                echo "${mass_inter[$y]} ${mass_ip[$y]}"
-            fi;
-            mass+=("${mass_inter[$y]} (${mass_ip[$y]})");
+                if [[ $DEBUG_MODE == 1 ]]; then
+                    echo "${mass_inter[$y]} ${mass_ip[$y]}";
+                fi;
+                mass+=("${mass_inter[$y]} (${mass_ip[$y]})");
             fi;
         fi;
     done;
 
-    echo "${mass[@]}"
+    echo "${mass[@]}";
     getTime;
 }
 
 function getKernel() {
-    date_start=$(date)
-    kernel_s=$(uname -s)
-    kernel_n=$(uname -n)
-    kernel_r=$(uname -r)
-    kernel_m=$(uname -m)
-    kernel_o=$(uname -o)
-    echo "$kernel_s $kernel_n $kernel_r $kernel_m $kernel_o"
+    date_start=$(date);
+    kernel_s=$(uname -s);
+    kernel_n=$(uname -n);
+    kernel_r=$(uname -r);
+    kernel_m=$(uname -m);
+    kernel_o=$(uname -o);
+    echo "$kernel_s $kernel_n $kernel_r $kernel_m $kernel_o";
     getTime;
 }
 
 function getOS() {
-    date_start=$(date)
+    date_start=$(date);
     if [[ -f "/etc/system-release" ]]; then
-        os=$(cat /etc/system-release)
+        os=$(cat /etc/system-release);
     elif [[ -f "/etc/lsb-release" ]]; then
-        os=$(grep DISTRIB_DESCRIPTION /etc/lsb-release | sed 's/DISTRIB_DESCRIPTION=//g' | sed 's/"//g')
+        os=$(grep DISTRIB_DESCRIPTION /etc/lsb-release | sed 's/DISTRIB_DESCRIPTION=//g' | sed 's/"//g');
     elif [[ -f "/etc/redhat-release" ]]; then
-        os=$(cat /etc/redhat-release)
+        os=$(cat /etc/redhat-release);
     else
-        os_devicename=$(getprop ro.config.devicename 2>/dev/null | getprop ro.product.model 2>/dev/null)
-        os_name=$(getprop net.bt.name 2>/dev/null)
-        os_release=$(getprop ro.build.version.release 2>/dev/null)
-        os="$os_devicename - $os_name $os_release"
+        os_devicename=$(getprop ro.config.devicename 2>/dev/null | getprop ro.product.model 2>/dev/null);
+        os_name=$(getprop net.bt.name 2>/dev/null);
+        os_release=$(getprop ro.build.version.release 2>/dev/null);
+        os="$os_devicename - $os_name $os_release";
     fi;
 
-    echo "$os"
+    echo "$os";
     getTime;
 }
 
 function getUptime() {
-    date_start=$(date)
-    uptime=$(uptime | sed 's/^\s//g' | sed 's/  / /g')
-    echo "$uptime"
+    date_start=$(date);
+    uptime=$(uptime | sed 's/^\s//g' | sed 's/  / /g');
+    echo "$uptime";
     getTime;
 }
 
 function getCPUcount() {
-    date_start=$(date)
-    CPUcount=$(grep -c processor /proc/cpuinfo)
-    echo "$CPUcount"
+    date_start=$(date);
+    CPUcount=$(grep -c processor /proc/cpuinfo);
+    echo "$CPUcount";
     getTime;
 }
 
 function getCPUmodel() {
-    date_start=$(date)
+    date_start=$(date);
     if [[ $(which lscpu 1>/dev/null 2>/dev/null; echo $?) == 0 ]]; then
-        model=$(lscpu | grep '^Model name' | sed 's/Model name:\s//g' | grep -v ' -' | uniq | xargs)
-        echo "$model"
+        model=$(lscpu | grep '^Model name' | sed 's/Model name:\s//g' | grep -v ' -' | uniq | xargs);
+        echo "$model";
     else
         model=$(grep -i "model name" /proc/cpuinfo | head -1 | awk '{print $4" "$5" "$6" "$7" "$8" "$9" "$10}');
-        echo "$model"
+        echo "$model";
     fi;
     getTime;
 }
 
 function getMemory() {
-    date_start=$(date)
-    memory=$(grep MemTotal /proc/meminfo | awk '{printf"%d", $2/1024}')
-    echo "$memory Mb"
+    date_start=$(date);
+    memory=$(grep MemTotal /proc/meminfo | awk '{printf"%d", $2/1024}');
+    echo "$memory Mb";
     getTime;
 }
 
 function getMemoryAvailable() {
-    date_start=$(date)
-    memory_parameter="MemAvailable"
-    memory_available=$(grep MemAvailable /proc/meminfo | awk '{printf"%d", $2/1024}')
+    date_start=$(date);
+    memory_parameter="MemAvailable";
+    memory_available=$(grep MemAvailable /proc/meminfo | awk '{printf"%d", $2/1024}');
     if [[ $memory_available == "" ]]; then
-        memory_parameter="MemFree"
-        memory_available=$(grep MemFree /proc/meminfo | awk '{printf"%d", $2/1024}')
+        memory_parameter="MemFree";
+        memory_available=$(grep MemFree /proc/meminfo | awk '{printf"%d", $2/1024}');
     fi;
-    echo "$memory_parameter = $memory_available Mb"
+    echo "$memory_parameter = $memory_available Mb";
     getTime;
 }
 
 function getSwap() {
-    date_start=$(date)
-    swap=$(grep SwapTotal /proc/meminfo | awk '{printf"%d", $2/1024}')
-    echo "$swap Mb"
+    date_start=$(date);
+    swap=$(grep SwapTotal /proc/meminfo | awk '{printf"%d", $2/1024}');
+    echo "$swap Mb";
     getTime;
 }
 
 function getSwapFree() {
-    date_start=$(date)
-    swap_free=$(grep SwapFree /proc/meminfo | awk '{printf"%d", $2/1024}')
-    echo "$swap_free Mb"
+    date_start=$(date);
+    swap_free=$(grep SwapFree /proc/meminfo | awk '{printf"%d", $2/1024}');
+    echo "$swap_free Mb";
+    getTime;
+}
+
+function parseOS() {
+    declare -A OSs=(
+        ["CentOS Linux release 7"]="CentOS 7"
+        ["CentOS Stream release 8"]="CentOS 8"
+        ["Red Hat Enterprise Linux Server release 6"]="RHEL 6"
+        ["Red Hat Enterprise Linux Server release 7"]="RHEL 7"
+        ["Red Hat Enterprise Linux release 8"]="RHEL 8"
+        ["Fedora release 40"]="Fedora 40"
+        ["Fedora release 41"]="Fedora 41"
+        ["Fedora release 42"]="Fedora 42"
+        ["Fedora release 43"]="Fedora 43"
+        ["Amazon Linux release 2"]="AL2"
+        ["Amazon Linux release 2023"]="AL2023"
+        ["Ubuntu 20"]="Ubuntu 20"
+    );
+
+    IFS=$'\n';
+    for os in "${!OSs[@]}"; do
+        count=$(grep -c "$os" "$1");
+
+        if [[ $count -eq 1 ]]; then
+            os="${OSs[$os]}";
+            break;
+        else
+            os="unknown";
+        fi;
+    done;
+    unset IFS;
+
+    echo "$os";
+}
+
+function getShortOS() {
+    date_start=$(date);
+
+    files_with_OS=(
+        "/etc/system-release"
+        "/etc/lsb-release"
+        "/etc/redhat-release"
+    );
+
+    for file_with_OS in "${files_with_OS[@]}"; do
+        if [[ -f "$file_with_OS" ]]; then
+            parseOS "$file_with_OS";
+            break;
+        else
+            os_name=$(getprop net.bt.name 2>/dev/null);
+            os_release=$(getprop ro.build.version.release 2>/dev/null);
+            echo "$os_name $os_release";
+            break;
+        fi;
+    done;
+
     getTime;
 }
 
 if [[ $ARGUMENT == -v || $ARGUMENT == -version || $ARGUMENT == --version ]]; then
     getVersion;
+elif [[ $ARGUMENT == -os || $ARGUMENT == --os ]]; then
+    getShortOS;
 else
     echo -e "\e[0;91m
 ++++++++++++++++++++: System Data (version $version) :++++++++++++++++++++\e[0m
