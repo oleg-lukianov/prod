@@ -131,7 +131,7 @@ function getUptime() {
 
 function getCPUcount() {
     date_start=$(date);
-    CPUcount=$(grep -c processor /proc/cpuinfo);
+    CPUcount=$(grep -c processor /proc/cpuinfo 1>/dev/null 2>/dev/null);
     echo "$CPUcount";
     getTime;
 }
@@ -142,7 +142,7 @@ function getCPUmodel() {
         model=$(lscpu | grep '^Model name' | sed 's/Model name:\s//g' | grep -v ' -' | uniq | xargs);
         echo "$model";
     else
-        model=$(grep -i "model name" /proc/cpuinfo | head -1 | awk '{print $4" "$5" "$6" "$7" "$8" "$9" "$10}');
+        model=$(grep -i "model name" /proc/cpuinfo 1>/dev/null 2>/dev/null | head -1 | awk '{print $4" "$5" "$6" "$7" "$8" "$9" "$10}');
         echo "$model";
     fi;
     getTime;
@@ -150,7 +150,7 @@ function getCPUmodel() {
 
 function getMemory() {
     date_start=$(date);
-    memory=$(grep MemTotal /proc/meminfo | awk '{printf"%d", $2/1024}');
+    memory=$(grep MemTotal /proc/meminfo 1>/dev/null 2>/dev/null | awk '{printf"%d", $2/1024}');
     echo "$memory Mb";
     getTime;
 }
@@ -158,10 +158,10 @@ function getMemory() {
 function getMemoryAvailable() {
     date_start=$(date);
     memory_parameter="MemAvailable";
-    memory_available=$(grep MemAvailable /proc/meminfo | awk '{printf"%d", $2/1024}');
+    memory_available=$(grep MemAvailable /proc/meminfo 1>/dev/null 2>/dev/null | awk '{printf"%d", $2/1024}');
     if [[ $memory_available == "" ]]; then
         memory_parameter="MemFree";
-        memory_available=$(grep MemFree /proc/meminfo | awk '{printf"%d", $2/1024}');
+        memory_available=$(grep MemFree /proc/meminfo 1>/dev/null 2>/dev/null | awk '{printf"%d", $2/1024}');
     fi;
     echo "$memory_parameter = $memory_available Mb";
     getTime;
@@ -169,46 +169,58 @@ function getMemoryAvailable() {
 
 function getSwap() {
     date_start=$(date);
-    swap=$(grep SwapTotal /proc/meminfo | awk '{printf"%d", $2/1024}');
+    swap=$(grep SwapTotal /proc/meminfo 1>/dev/null 2>/dev/null | awk '{printf"%d", $2/1024}');
     echo "$swap Mb";
     getTime;
 }
 
 function getSwapFree() {
     date_start=$(date);
-    swap_free=$(grep SwapFree /proc/meminfo | awk '{printf"%d", $2/1024}');
+    swap_free=$(grep SwapFree /proc/meminfo 1>/dev/null 2>/dev/null | awk '{printf"%d", $2/1024}');
     echo "$swap_free Mb";
     getTime;
 }
 
 function parseOS() {
-    declare -A OSs=(
-        ["CentOS Linux release 7"]="CentOS 7"
-        ["CentOS Stream release 8"]="CentOS 8"
-        ["Red Hat Enterprise Linux Server release 6"]="RHEL 6"
-        ["Red Hat Enterprise Linux Server release 7"]="RHEL 7"
-        ["Red Hat Enterprise Linux release 8"]="RHEL 8"
-        ["Fedora release 40"]="Fedora 40"
-        ["Fedora release 41"]="Fedora 41"
-        ["Fedora release 42"]="Fedora 42"
-        ["Fedora release 43"]="Fedora 43"
-        ["Amazon Linux release 2"]="AL2"
-        ["Amazon Linux release 2023"]="AL2023"
-        ["Ubuntu 20"]="Ubuntu 20"
-    );
+    if [[ $BASH_VERSINFO -gt 3 ]]; then
+        declare -A OSs=(
+            ["CentOS Linux release 7"]="CentOS 7"
+            ["CentOS Stream release 8"]="CentOS 8"
+            ["Red Hat Enterprise Linux Server release 5"]="RHEL 5"
+            ["Red Hat Enterprise Linux Server release 6"]="RHEL 6"
+            ["Red Hat Enterprise Linux Server release 7"]="RHEL 7"
+            ["Red Hat Enterprise Linux release 8"]="RHEL 8"
+            ["Fedora release 40"]="Fedora 40"
+            ["Fedora release 41"]="Fedora 41"
+            ["Fedora release 42"]="Fedora 42"
+            ["Fedora release 43"]="Fedora 43"
+            ["Amazon Linux release 2"]="AL2"
+            ["Amazon Linux release 2023"]="AL2023"
+            ["Ubuntu 20"]="Ubuntu 20"
+        );
 
-    IFS=$'\n';
-    for os in "${!OSs[@]}"; do
+        IFS=$'\n';
+        for os in "${!OSs[@]}"; do
+            count=$(grep -c "$os" "$1");
+
+            if [[ $count -eq 1 ]]; then
+                os="${OSs[$os]}";
+                break;
+            else
+                os="unknown";
+            fi;
+        done;
+        unset IFS;
+    else
+        os="Red Hat Enterprise Linux Server release 5";
         count=$(grep -c "$os" "$1");
 
         if [[ $count -eq 1 ]]; then
-            os="${OSs[$os]}";
-            break;
+            os="RHEL 5";
         else
             os="unknown";
         fi;
-    done;
-    unset IFS;
+    fi;
 
     echo "$os";
 }
@@ -226,13 +238,14 @@ function getShortOS() {
         if [[ -f "$file_with_OS" ]]; then
             parseOS "$file_with_OS";
             break;
-        else
-            os_name=$(getprop net.bt.name 2>/dev/null);
-            os_release=$(getprop ro.build.version.release 2>/dev/null);
-            echo "$os_name $os_release";
-            break;
         fi;
     done;
+
+    if [[ "$os" == "" ]]; then
+        os_name=$(getprop net.bt.name 2>/dev/null);
+        os_release=$(getprop ro.build.version.release 2>/dev/null);
+        echo "$os_name $os_release";
+    fi;
 
     getTime;
 }
