@@ -131,7 +131,7 @@ function getUptime() {
 
 function getCPUcount() {
     date_start=$(date);
-    CPUcount=$(grep -c processor /proc/cpuinfo 1>/dev/null 2>/dev/null);
+    CPUcount=$(grep -c processor /proc/cpuinfo 2>/dev/null);
     echo "$CPUcount";
     getTime;
 }
@@ -142,7 +142,7 @@ function getCPUmodel() {
         model=$(lscpu | grep '^Model name' | sed 's/Model name:\s//g' | grep -v ' -' | uniq | xargs);
         echo "$model";
     else
-        model=$(grep -i "model name" /proc/cpuinfo 1>/dev/null 2>/dev/null | head -1 | awk '{print $4" "$5" "$6" "$7" "$8" "$9" "$10}');
+        model=$(grep -i "model name" /proc/cpuinfo 2>/dev/null | head -1 | awk '{print $4" "$5" "$6" "$7" "$8" "$9" "$10}');
         echo "$model";
     fi;
     getTime;
@@ -150,7 +150,7 @@ function getCPUmodel() {
 
 function getMemory() {
     date_start=$(date);
-    memory=$(grep MemTotal /proc/meminfo 1>/dev/null 2>/dev/null | awk '{printf"%d", $2/1024}');
+    memory=$(grep MemTotal /proc/meminfo 2>/dev/null | awk '{printf"%d", $2/1024}');
     echo "$memory Mb";
     getTime;
 }
@@ -158,10 +158,10 @@ function getMemory() {
 function getMemoryAvailable() {
     date_start=$(date);
     memory_parameter="MemAvailable";
-    memory_available=$(grep MemAvailable /proc/meminfo 1>/dev/null 2>/dev/null | awk '{printf"%d", $2/1024}');
+    memory_available=$(grep MemAvailable /proc/meminfo 2>/dev/null | awk '{printf"%d", $2/1024}');
     if [[ $memory_available == "" ]]; then
         memory_parameter="MemFree";
-        memory_available=$(grep MemFree /proc/meminfo 1>/dev/null 2>/dev/null | awk '{printf"%d", $2/1024}');
+        memory_available=$(grep MemFree /proc/meminfo 2>/dev/null | awk '{printf"%d", $2/1024}');
     fi;
     echo "$memory_parameter = $memory_available Mb";
     getTime;
@@ -169,14 +169,14 @@ function getMemoryAvailable() {
 
 function getSwap() {
     date_start=$(date);
-    swap=$(grep SwapTotal /proc/meminfo 1>/dev/null 2>/dev/null | awk '{printf"%d", $2/1024}');
+    swap=$(grep SwapTotal /proc/meminfo 2>/dev/null | awk '{printf"%d", $2/1024}');
     echo "$swap Mb";
     getTime;
 }
 
 function getSwapFree() {
     date_start=$(date);
-    swap_free=$(grep SwapFree /proc/meminfo 1>/dev/null 2>/dev/null | awk '{printf"%d", $2/1024}');
+    swap_free=$(grep SwapFree /proc/meminfo 2>/dev/null | awk '{printf"%d", $2/1024}');
     echo "$swap_free Mb";
     getTime;
 }
