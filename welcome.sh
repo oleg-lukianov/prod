@@ -25,6 +25,9 @@ version="1.0.8 13.09.2024";
 version="1.0.9 18.03.2025";
 # Changelog:
 # - added -os features
+version="1.0.10 18.04.2025";
+# Changelog:
+# - fix errors with AL2 and AL2023 in --os function
 
 
 #################################
@@ -186,7 +189,6 @@ function parseOS() {
         declare -A OSs=(
             ["CentOS Linux release 7"]="CentOS 7"
             ["CentOS Stream release 8"]="CentOS 8"
-            ["Red Hat Enterprise Linux Server release 5"]="RHEL 5"
             ["Red Hat Enterprise Linux Server release 6"]="RHEL 6"
             ["Red Hat Enterprise Linux Server release 7"]="RHEL 7"
             ["Red Hat Enterprise Linux release 8"]="RHEL 8"
@@ -194,7 +196,7 @@ function parseOS() {
             ["Fedora release 41"]="Fedora 41"
             ["Fedora release 42"]="Fedora 42"
             ["Fedora release 43"]="Fedora 43"
-            ["Amazon Linux release 2"]="AL2"
+            ["Amazon Linux release 2 (Karoo)"]="AL2"
             ["Amazon Linux release 2023"]="AL2023"
             ["Ubuntu 20"]="Ubuntu 20"
         );
