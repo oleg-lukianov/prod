@@ -28,6 +28,9 @@ version="1.0.9 18.03.2025";
 version="1.0.10 18.04.2025";
 # Changelog:
 # - fix errors with AL2 and AL2023 in --os function
+version="1.0.11 22.05.2025";
+# Changelog:
+# - add Oracle Linux OS
 
 
 #################################
@@ -199,6 +202,7 @@ function parseOS() {
             ["Amazon Linux release 2 (Karoo)"]="AL2"
             ["Amazon Linux release 2023"]="AL2023"
             ["Ubuntu 20"]="Ubuntu 20"
+            ["Oracle Linux Server release 8"]="OL8"
         );
 
         IFS=$'\n';
