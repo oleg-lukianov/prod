@@ -190,18 +190,18 @@ function getSwapFree() {
 function parseOS() {
     if [[ $BASH_VERSINFO -gt 3 ]]; then
         declare -A OSs=(
-            ["CentOS Linux release 7"]="CentOS 7"
-            ["CentOS Stream release 8"]="CentOS 8"
-            ["Red Hat Enterprise Linux Server release 6"]="RHEL 6"
-            ["Red Hat Enterprise Linux Server release 7"]="RHEL 7"
-            ["Red Hat Enterprise Linux release 8"]="RHEL 8"
-            ["Fedora release 40"]="Fedora 40"
-            ["Fedora release 41"]="Fedora 41"
-            ["Fedora release 42"]="Fedora 42"
-            ["Fedora release 43"]="Fedora 43"
+            ["CentOS Linux release 7"]="CentOS7"
+            ["CentOS Stream release 8"]="CentOS8"
+            ["Red Hat Enterprise Linux Server release 6"]="RHEL6"
+            ["Red Hat Enterprise Linux Server release 7"]="RHEL7"
+            ["Red Hat Enterprise Linux release 8"]="RHEL8"
+            ["Fedora release 40"]="Fedora40"
+            ["Fedora release 41"]="Fedora41"
+            ["Fedora release 42"]="Fedora42"
+            ["Fedora release 43"]="Fedora43"
             ["Amazon Linux release 2 (Karoo)"]="AL2"
             ["Amazon Linux release 2023"]="AL2023"
-            ["Ubuntu 20"]="Ubuntu 20"
+            ["Ubuntu 20"]="Ubuntu20"
             ["Oracle Linux Server release 8"]="OL8"
         );
 
