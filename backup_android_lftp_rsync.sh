@@ -1,6 +1,6 @@
 #!/bin/bash
 
-######  Example start script   ############################
+######  Example start script  ############################
 #  for Termux
 #
 #  bash /storage/emulated/0/github/prod/backup_android_lftp_rsync.sh -lftp | tee -a /storage/emulated/0/scripts/backup/backup_android_lftp_rsync.log
@@ -49,7 +49,7 @@ sshpass -V
         
     done;
     unset IFS;
-    
+
     echo "Selftest.....END (selftest_count=$selftest_count)";
     echo "";
     if [[ $selftest_count = 1 ]]; then
@@ -70,7 +70,7 @@ function check_dublicate() {
         echo -e "~~~Script $script_name already working......~~~";
         echo -e "$dublicate";
         exit 0;
-    fi;
+    fi
 }
 
 check_dublicate;
@@ -86,13 +86,13 @@ function parseConfig() {
     elif [[ "$value" == "" ]]; then
       echo "In config value for '$var' is NULL";
       exit 1;
-    fi;
+    fi
 
     value=${value// /};
 
     if [[ "$value" =~ $'\n' ]]; then
       value=${value//$'\n'/ };
-    fi;
+    fi
 
     echo "$value";
 }
@@ -143,20 +143,21 @@ home_ip=$(ifconfig -a 2>/dev/null | grep -c '192.168.');
 if [[ $home_ip == 1 ]]; then
     if [[ $conn == 1 ]]; then
 
-	if [[ "$test_mode" =~ "-test" ]]; then
-	    echo "Send '$0' to '$dir_dest'"
-	    if [[ "$mode" =~ "-lftp" ]]; then
-	        echo "Test connection from LFTP method"
+        if [[ "$test_mode" =~ "-test" ]]; then
+            echo "Send '$0' to '$dir_dest'"
+
+            if [[ "$mode" =~ "-lftp" ]]; then
+                echo "Test connection from LFTP method"
                 lftp -e "set ftp:ssl-allow no; put -O $dir_dest/ '$0'; exit;" -p "$port" -u "$login","$pass" sftp://"$server";
                 exit 0;
             elif [[ "$mode" =~ "-rsync" ]]; then
-	        echo "Test connection from RSYNC method"
+                echo "Test connection from RSYNC method"
                 sshpass -p "$pass" rsync --progress -av -e "ssh -o StrictHostKeyChecking=no -p $port -l $login" "$0" "$server:$dir_dest";
                 exit 0;
-	    else
-	        echo "Not parameters (-lftp, -rsync)";
-            fi;
-	fi;
+            else
+                echo "Not parameters (-lftp, -rsync)";
+            fi
+        fi
 
 
         for x in $dir_backup; do
@@ -170,7 +171,7 @@ if [[ $home_ip == 1 ]]; then
                 echo "src_final = $src_final";
                 echo "dest_final = $dest_final";
                 echo "Enable mode: $mode";
-                
+
                 if [[ "$mode" =~ "-lftp" ]]; then
                     lftp -e "set ftp:ssl-allow no; mirror --continue --delete -R -x 'thumb' -x '.tmfs' -x '.gs' -x 'Android' -x '.estrongs' $src_final $dest_final/; exit;" -p "$port" -u "$login","$pass" sftp://"$server";
 
@@ -179,25 +180,26 @@ if [[ $home_ip == 1 ]]; then
 
                 else
                     echo "Not parameters (-lftp, -rsync)";
-                fi;
+                fi
 
                 echo "";
-            fi;
+            fi
         done;
     else
         echo "Not connected";
-        
+
         if [[ "$mode" =~ "-lftp" ]]; then
             curl -vI sftp://"$login":"$pass"@"$server":"$port";
         elif [[ "$mode" =~ "-rsync" ]]; then
             echo "quit" | telnet "$server" "$port";
         else
             echo "Not parameters (-lftp, -rsync)";
-        fi;
-    fi;
+        fi
+    fi
 else
     echo "Device not at home";
-fi;
+fi
+
 echo "";
 echo "-----  End $(date '+%F %T') (version $version)  -----";
 
