@@ -138,7 +138,7 @@ fi
 echo "Connecting status is '$conn' (1 - connected, 0 - not connected)";
 
 
-home_ip=$(ifconfig -a 2>/dev/null | grep -c '192.168.');
+home_ip=$(ifconfig -a 2>&1 | grep wlan | grep -c UP);
 
 if [[ $home_ip == 1 ]]; then
     if [[ $conn == 1 ]]; then
