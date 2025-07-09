@@ -17,6 +17,7 @@ version="1.05 - 23.02.2021";
 version="1.06 - 27.05.2022";
 version="1.07 - 16.06.2023";
 version="1.08 - 05.01.2024";
+version="1.09 - 09.07.2025";
 
 echo "-----  Start $(date '+%F %T') (version $version)  -----";
 echo "";
@@ -121,26 +122,23 @@ echo "Configuration set variable 'dir_dest'='$dir_dest'";
 dir_backup=$(parseConfig "dir_backup");
 echo "Configuration set variable 'dir_backup'='$dir_backup'";
 
-
-
-if [[ "$mode" =~ "-lftp" ]]; then
-    echo "Check connect to service $server:$port.....";
-    conn=$(curl -vI sftp://"$login":"$pass"@"$server":"$port" 2>&1 | grep -c "Connected to");
-    dest="${dir_dest}/";
-elif [[ "$mode" =~ "-rsync" ]]; then
-    echo "Check connect to RSYNC $server:$port.....";
-    conn=$(echo "quit" | telnet "$server" "$port" 2>&1 | grep -c "Connected to");
-    dest="${dir_dest}/";
-else
-    echo "Not parameters (-lftp, -rsync)";
-fi
-
-echo "Connecting status is '$conn' (1 - connected, 0 - not connected)";
-
-
 home_ip=$(ifconfig -a 2>&1 | grep wlan | grep -c UP);
 
 if [[ $home_ip == 1 ]]; then
+    if [[ "$mode" =~ "-lftp" ]]; then
+        echo "Check connect to service $server:$port.....";
+        conn=$(curl -vI --connect-timeout 10 sftp://"$login":"$pass"@"$server":"$port" 2>&1 | grep -c "Connected to");
+        dest="${dir_dest}/";
+    elif [[ "$mode" =~ "-rsync" ]]; then
+        echo "Check connect to RSYNC $server:$port.....";
+        conn=$(echo "quit" | telnet "$server" "$port" 2>&1 | grep -c "Connected to");
+        dest="${dir_dest}/";
+    else
+        echo "Not parameters (-lftp, -rsync)";
+    fi
+
+    echo "Connecting status is '$conn' (1 - connected, 0 - not connected)";
+
     if [[ $conn == 1 ]]; then
 
         if [[ "$test_mode" =~ "-test" ]]; then
@@ -189,7 +187,7 @@ if [[ $home_ip == 1 ]]; then
         echo "Not connected";
 
         if [[ "$mode" =~ "-lftp" ]]; then
-            curl -vI sftp://"$login":"$pass"@"$server":"$port";
+            curl -vI --connect-timeout 10 sftp://"$login":"$pass"@"$server":"$port";
         elif [[ "$mode" =~ "-rsync" ]]; then
             echo "quit" | telnet "$server" "$port";
         else
