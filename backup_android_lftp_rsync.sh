@@ -18,6 +18,7 @@ version="1.06 - 27.05.2022";
 version="1.07 - 16.06.2023";
 version="1.08 - 05.01.2024";
 version="1.09 - 09.07.2025";
+version="1.10 - 07.11.2025";
 
 echo "-----  Start $(date '+%F %T') (version $version)  -----";
 echo "";
@@ -127,7 +128,7 @@ home_ip=$(ifconfig -a 2>&1 | grep wlan | grep -c UP);
 if [[ $home_ip == 1 ]]; then
     if [[ "$mode" =~ "-lftp" ]]; then
         echo "Check connect to service $server:$port.....";
-        conn=$(curl -vI --connect-timeout 10 sftp://"$login":"$pass"@"$server":"$port" 2>&1 | grep -c "Connected to");
+        conn=$(curl -vI --connect-timeout 10 sftp://"$login":"$pass"@"$server":"$port" 2>&1 | grep -c "Connected to\|Authentication complete");
         dest="${dir_dest}/";
     elif [[ "$mode" =~ "-rsync" ]]; then
         echo "Check connect to RSYNC $server:$port.....";
