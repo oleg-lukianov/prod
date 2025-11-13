@@ -140,7 +140,7 @@ if [[ $home_ip == 1 ]]; then
 
     echo "Connecting status is '$conn' (1 - connected, 0 - not connected)";
 
-    if [[ $conn > 0 ]]; then
+    if [[ $conn -gt 0 ]]; then
 
         if [[ "$test_mode" =~ "-test" ]]; then
             echo "Send '$0' to '$dir_dest'"
