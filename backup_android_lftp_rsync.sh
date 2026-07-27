@@ -128,7 +128,7 @@ home_ip=$(ifconfig -a 2>&1 | grep wlan | grep -c UP);
 if [[ $home_ip == 1 ]]; then
     if [[ "$mode" =~ "-lftp" ]]; then
         echo "Check connect to service $server:$port.....";
-        conn=$(curl -vI --connect-timeout 10 sftp://"$login":"$pass"@"$server":"$port" 2>&1 | grep -c "Connected to\|Authentication complete");
+        conn=$(curl -vI --connect-timeout 10 sftp://"$login":"$pass"@"$server":"$port" 2>&1 | grep -c "Connected to\|[aA]uthentication complete");
         dest="${dir_dest}/";
     elif [[ "$mode" =~ "-rsync" ]]; then
         echo "Check connect to RSYNC $server:$port.....";
