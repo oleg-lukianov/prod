@@ -34,3 +34,4 @@ Only wil create file with script name
 ```bash ./backup_android_lftp_rsync.sh -rsync -test```  
 or  
 ```bash ./backup_android_lftp_rsync.sh -rsync -test```  
+
