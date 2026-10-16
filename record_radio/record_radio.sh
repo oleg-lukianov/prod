@@ -43,7 +43,7 @@ if [[ $name == [a-zA-Z0-9]* ]]; then
     if [[ $size -gt 50 ]]; then
         proc_num=$( pgrep curl | xargs );
         echo "Do kill: proc_num = $proc_num";
-        kill "$proc_num";
+        kill $proc_num;
     else
         echo "Do not killed any processes";
     fi
