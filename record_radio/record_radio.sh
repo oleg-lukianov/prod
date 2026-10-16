@@ -5,6 +5,8 @@
 #########  Config  ###########################
 
 catalog_radio="/storage/emulated/0/Music/Radio";
+hours_from=17
+hours_to=7
 
 #########  Kill active process  ##################
 
@@ -66,7 +68,7 @@ radio_status=$( cat "$file_status" );
 echo "Radio status = $radio_status";
 
 if [[ "$radio_status" =~ "RUN" ]]; then
-    if [[ $hour -gt 17 || $hour -lt 7 ]]; then
+    if [[ $hour -gt $hours_from || $hour -lt $hours_to ]]; then
         echo "Radio recording......";
         cd $catalog_radio || exit;
         curl -o "$(date +%Y-%m-%d__%H-%M-%S)__LuxRadio.mp3" https://lux.radio.tvstitch.com/kyiv/lux_adv_sd?npa=1 2> /dev/null &
