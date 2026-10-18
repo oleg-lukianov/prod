@@ -26,6 +26,7 @@ else
 fi
 echo "hours_from=$hours_from"
 echo "hours_to=$hours_to"
+echo "max_file_size=$max_file_size"
 echo "~~~~ End --- Config ~~~~";
 echo "";
 
