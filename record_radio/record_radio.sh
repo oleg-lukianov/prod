@@ -4,17 +4,15 @@
 #
 #########  crontab  ##############################
 #
-#  Run every 30 minutes
-#  */30 * * * * bash /storage/emulated/0/github/prod/record_radio/record_radio.sh > /storage/emulated/0/github/prod/record_radio/record_radio.log 2>&1
-#
 #  Run every 1 hour
-#  0 * * * * bash /storage/emulated/0/github/prod/record_radio/record_radio.sh > /storage/emulated/0/github/prod/record_radio/record_radio.log 2>&1
+#  0 * * * * bash /storage/emulated/0/github/prod/record_radio/record_radio.sh >> /storage/emulated/0/github/prod/record_radio/record_radio.log 2>&1
 #
 #########  Config  ###############################
 
 catalog_radio="/storage/emulated/0/Music/Radio";
 hours_from=20;
 hours_to=7;
+max_file_size=50;
 
 #########  Config job  ###########################
 
@@ -40,7 +38,7 @@ echo "Do not kill: name = \"$name\"";
 if [[ $name == [a-zA-Z0-9]* ]]; then
     size=$( du -m "$catalog_radio/$name" | busybox awk '{print $1}' );
     echo "Do not kill: size = $size Mb";
-    if [[ $size -gt 50 ]]; then
+    if [[ $size -gt $max_file_size ]]; then
         proc_num=$( pgrep curl | xargs );
         echo "Do kill: proc_num = $proc_num";
         kill $proc_num;
