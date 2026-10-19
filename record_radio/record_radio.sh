@@ -52,25 +52,8 @@ echo "";
 
 #########  Delete old files  #####################
 
-echo "~~~~ Start - Delete old files ~~~~";
-now=$(((( $(date +%Y )-1970)*365)+( $( date +%m )*30)+( $(date +%e )) ));
-one_day=$(( "$now"-1 ));
-
-delete_time=$( find $catalog_radio/* -type f | grep -Eo "[0-9]{4}-[0-9]{2}-[0-9]{2}" | uniq );
-
-for date_radio in $delete_time; do
-    prob_radio=${date_radio//-/ };
-    year_radio=$(( ($( echo "$prob_radio" | busybox awk '{print $1}' ) - 1970)*365 ));
-    month_radio=$(( $( echo "$prob_radio" | busybox awk '{print $2}' ) * 30 ));
-    day_radio=$(( $( echo "$prob_radio" | busybox awk '{print $3}' | sed 's/^0//' ) ));
-    weeks_radio=$(( year_radio+month_radio+day_radio ));
-
-    if [ $weeks_radio -le $one_day ]; then
-        file_name="$catalog_radio/$date_radio*";
-        echo "DELETE - $file_name";
-        rm -r $file_name;
-    fi
-done
+echo "~~~~ Start - Delete old files ($(date '+%F %T')) ~~~~";
+find $catalog_radio/* -name "*-*-*__*-*-*__*.mp3" -type f -mtime +1 -exec ls -lha {} \; -delete;
 echo "~~~~ End --- Delete old files ~~~~";
 echo "";
 
